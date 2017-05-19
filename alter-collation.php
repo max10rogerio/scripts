@@ -1,6 +1,6 @@
 <?php
 
-  $con = mysqli_connect('localhost','root','', 'intranet.famma');
+  $con = mysqli_connect('','','', '');
   if(!$con) { echo "Cannot connect to the database ";die();}
   $result=mysqli_query($con, 'show tables');
   while($tables = mysqli_fetch_array($result)) {
