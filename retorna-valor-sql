@@ -1,0 +1,17 @@
+/*
+  Esse script é utilizado caso precisa necessite que a consulta sql mesmo não trazendo algum resultado, retorne algum valor
+*/
+
+
+SELECT 
+	CASE
+		WHEN COUNT(1) > 0 /* O numero 1 no count signific:a primeira coluna do select*/
+			THEN 1 /*caso tiver algum valor fazer o processo aqui, neste caso ele retorna 1*/
+			ELSE 0 /*caso não trazer valores fazer o processo aqui, neste caso ele retorna 0*/
+		END
+	AS CODTDO
+FROM 
+	FLAN
+WHERE 
+	IDLAN = '123'
+	AND CODTDO IN ('RECGRA', 'RECPOS')
