@@ -129,11 +129,11 @@ BEGIN TRANSACTION INSERE_ATIVIDADE
 				END
 			SET @COUNT += 1
 		END
-/*-- FIM DA INSER«√O DAS GRADES NAS ATIVIDADES --*/
+/*-- FIM DA INSER√á√ÉO DAS GRADES NAS ATIVIDADES --*/
 
 
 
-/*-- AP”S TERMINAR O WHILE VERIFICAR SE TUDO ESTA DE ACORDO --*/
+/*-- AP√ìS TERMINAR O WHILE VERIFICAR SE TUDO ESTA DE ACORDO --*/
 --QTDE DE REGISTROS NA TABELA: 3020820
 SELECT COUNT(*) FROM SATIVIDADEGRADE
 
@@ -146,10 +146,10 @@ TRUNCATE TABLE SATIVIDADEGRADE
 
 
 /*-- TENTATIVA 2 --*/
-/*-- Aparentemente foi a que funcionou melhor, deu diferenÁa de 1 registro mais ou menos em alguns alunos. --*/
+/*-- Aparentemente foi a que funcionou melhor, deu diferen√ßa de 1 registro mais ou menos em alguns alunos. --*/
 
 
-/*-- Cria uma tabela para guardar as informaÁıes da ULTIMA grade do aluno --*/
+/*-- Cria uma tabela para guardar as informa√ß√µes da ULTIMA grade do aluno --*/
 CREATE TABLE GRADEALUNO(
 	MATRICULA INT,
 	CURSO INT,
@@ -174,7 +174,7 @@ GROUP BY
 ORDER BY AT.MATALUNO ASC
 
 
-/*-- Busca o IDHABILITACA«√OFILIAL maior do curso do aluno --*/
+/*-- Busca o IDHABILITACA√á√ÉOFILIAL maior do curso do aluno --*/
 SELECT 
 	H.RA, MAX(H.IDHABILITACAOFILIAL) AS MAIORIDHABILITACAO
 	INTO #RAHABLIT
@@ -182,9 +182,9 @@ FROM
 	SHABILITACAOALUNO H,
 	GRADEALUNO G
 WHERE H.RA = G.MATRICULA
-	  /*- Filtro somente o IDHABILITACAOFILIAL de graduaÁ„o
-			validando o curso que est· na atvcomplementar
-			Na tabela GRADEALUNO, est· o curso do vinculado a grade
+	  /*- Filtro somente o IDHABILITACAOFILIAL de gradua√ß√£o
+			validando o curso que est√° na atvcomplementar
+			Na tabela GRADEALUNO, est√° o curso do vinculado a grade
 	  -*/
 	  AND H.IDHABILITACAOFILIAL IN (SELECT IDHABILITACAOFILIAL FROM SHABILITACAOFILIAL 
 										WHERE CODCURSO <= 100 AND CODCURSO = G.CURSO)
@@ -193,13 +193,13 @@ ORDER BY H.RA
 
 
 
-/*-- Inicio a operaÁ„o final, vinculando os alunos nas atividades na SATIVIDADEALUNO --*/
+/*-- Inicio a opera√ß√£o final, vinculando os alunos nas atividades na SATIVIDADEALUNO --*/
 /*--
 		utilizei como referencia o maior IDHABILITACAOFILIAL, conferi alguns casos
 		Exemplo: Alunos somente com uma GRADE, passou as atividades corretamente.
-				 Conferi um caso de um aluno que teve mudanÁa de curso, as 
+				 Conferi um caso de um aluno que teve mudan√ßa de curso, as 
 			  	 atividades foram para o curso que estava matriculado.
-				 Conferi um caso de uma aluno que teve mudanÁa de grade no mesmo curso
+				 Conferi um caso de uma aluno que teve mudan√ßa de grade no mesmo curso
 				 o mesmo, as atividades foram para a IDHABILITACAOFILIAL, para a qual
 				 ele estava formado.
 --*/
@@ -223,7 +223,7 @@ BEGIN TRANSACTION ALUNO_ATIVIDADE
 								 DATA,
 								 RECCREATEDBY, 
 								 RECCREATEDON)
-	/*-- inserÁ„o via select --*/
+	/*-- inser√ß√£o via select --*/
 	SELECT S.CODCOLIGADA,
 		   (@ID+ROW_NUMBER()OVER (ORDER BY S.DESCRICAO ASC)) AS ID, /*-- auto_increment --*/
 		   R.MAIORIDHABILITACAO,
@@ -243,7 +243,7 @@ BEGIN TRANSACTION ALUNO_ATIVIDADE
 						AND S.CARGAHOR = U.CARGAHORARIA
 		INNER JOIN #RAHABLIT R ON R.RA = U.MATALUNO
 
-	/*--TERMINAR A TRANSA«√O--*/
+	/*--TERMINAR A TRANSA√á√ÉO--*/
 	IF @@ERROR <> 0
 		BEGIN
 			ROLLBACK TRANSACTION ALUNO_ATIVIDADE
@@ -252,7 +252,7 @@ BEGIN TRANSACTION ALUNO_ATIVIDADE
 	ELSE
 		BEGIN
 			COMMIT TRANSACTION ALUNO_ATIVIDADE
-			SELECT 'Qual a prÛxima treta?'
+			SELECT 'Qual a pr√≥xima treta?'
 		END
 
 
@@ -273,4 +273,4 @@ BEGIN TRANSACTION ATZ_AUTOINC
 			SELECT 'Tabela atualizada com sucesso. GAUTOINC -> IDATIVIDADE'
 		END
 
-/*-- Finalizada a operaÁ„o de convers„o!!! --*/
+/*-- Finalizada a opera√ß√£o de convers√£o!!! --*/
