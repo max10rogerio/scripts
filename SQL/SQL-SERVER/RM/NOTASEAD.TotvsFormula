@@ -1,0 +1,179 @@
+/*--
+
+Tipos de variaveis:
+    V - inteiro
+    S - string
+    
+--*/
+
+
+/*DECLARAÇÃO DE VARIAVEIS*/
+DECL NOTA1,      /*etapa 1 - Prova Regular*/
+     NOTA2,      /*etapa 2 - Segunda Chamada*/
+     NOTA3,      /*etapa 3 - Exame*/
+     NOTA4,      /*etapa 4 - Recuperação de Conceito*/
+     MEDIAFINAL; /*etapa 10*/
+
+/*Definindo o status como Matriculado, caso a nota da prova regular ainda não foi lançada*/
+SE ((BUSCACAMPOETAPA(1, "NOTA", "S")) = "") E ((BUSCACAMPOETAPA(2, "NOTA", "S")) = "") ENTAO
+    GRAVACAMPOMATRICULA("CODSTATUSRES", "1"); /*CODSTATUSRES = RESULTADO FINAL*/
+    GRAVACAMPOMATRICULA("CODSTATUS", "1");    /*CODSTATUS = STATUS DA MATRICULA*/
+    GRAVACAMPOETAPA(10, "NOTA", ""); /*LIMPA A MEDIA FINAL*/
+FIMSE;
+
+/*NOTA1 - Nota da prova regular única*/
+SE((BUSCACAMPOETAPA(1, "NOTA", "S")) <> "") ENTAO
+    SETVAR(NOTA1,((BUSCACAMPOETAPA(1, "NOTA", "V"))));
+SENAO
+    SETVAR(NOTA1, "");
+FIMSE;
+
+/*NOTA2 - Nota da prova segunda chamada*/
+SE((BUSCACAMPOETAPA(2, "NOTA", "S")) <> "") ENTAO
+    SETVAR(NOTA2,((BUSCACAMPOETAPA(2, "NOTA", "V"))));
+SENAO
+    SETVAR(NOTA2, "");
+FIMSE;
+
+/*NOTA3 - Nota do exame*/
+SE((BUSCACAMPOETAPA(3, "NOTA", "S")) <> "") ENTAO
+    SETVAR(NOTA3,((BUSCACAMPOETAPA(3, "NOTA", "V"))));
+SENAO
+    SETVAR(NOTA3, "");
+FIMSE;
+
+/*NOTA4 - Nota do Aproveitamento de Conceito*/
+SE((BUSCACAMPOETAPA(4, "NOTA", "S")) <> "") ENTAO
+    SETVAR(NOTA4,((BUSCACAMPOETAPA(4, "NOTA", "V"))));
+SENAO
+    SETVAR(NOTA4, "");
+FIMSE;
+
+/*MEDIFINAL - Medfia Final*/
+SE ((BUSCACAMPOETAPA(10, "NOTA", "S")) <> "") ENTAO
+    SETVAR(MEDIAFINAL, ((BUSCACAMPOETAPA(10, "NOTA", "V"))));
+SENAO
+    SETVAR(MEDIAFINAL, "");
+FIMSE;
+
+/*--
+  STATUS:
+      - 1 : Matriculado
+      - 9 : Reprovado
+      - 10: Exame
+      - 11: Aprovado
+      - 22: Aprovado em Exame
+      - 30: Aprovado em Recuperação de Conceito
+--*/
+
+SE (TAMSTR(NOTA1) > 0) ENTAO
+
+    /*SE LANÇAR A NOTA DE PROVA REGULAR, LIMPA A NOTA DA PROVA DE SEGUNDA CHAMADA*/
+    GRAVACAMPOETAPA(2, "NOTA", "");
+    
+    SE (NOTA1 >= 7) ENTAO /* Aprovado */
+        GRAVACAMPOMATRICULA("CODSTATUSRES", "11"); /*CODSTATUSRES = RESULTADO FINAL*/
+        GRAVACAMPOMATRICULA("CODSTATUS", "11");    /*CODSTATUS = STATUS DA MATRICULA*/
+    SENAO
+        SE (NOTA1 < 4) ENTAO /* Reprovado */
+            GRAVACAMPOMATRICULA("CODSTATUSRES", "9"); /*CODSTATUSRES = RESULTADO FINAL*/
+            GRAVACAMPOMATRICULA("CODSTATUS", "9");    /*CODSTATUS = STATUS DA MATRICULA*/
+        SENAO /*Exame*/
+            GRAVACAMPOMATRICULA("CODSTATUSRES", "10"); /*CODSTATUSRES = RESULTADO FINAL*/
+            GRAVACAMPOMATRICULA("CODSTATUS", "10");    /*CODSTATUS = STATUS DA MATRICULA*/        
+        FIMSE;
+    FIMSE;
+    
+    /*GRAVA NA MEDIA O VALOR DE NOTA1 - ETAPA REGULAR*/
+    GRAVACAMPOETAPA(10, "NOTA", NOTA1);
+    
+SENAO
+    SE (TAMSTR(NOTA2) > 0) ENTAO /*-- Segunda Chamada --*/
+    
+        /*SE LANÇAR A NOTA DE SEGUNDA CHAMADA, LIMPA A DA PROVA REGULAR*/
+        GRAVACAMPOETAPA(1, "NOTA", "");
+        
+        SE (NOTA2 >= 7) ENTAO /*Aprovado*/    
+            GRAVACAMPOMATRICULA("CODSTATUSRES", "11"); /*CODSTATUSRES = RESULTADO FINAL*/
+            GRAVACAMPOMATRICULA("CODSTATUS", "11");    /*CODSTATUS = STATUS DA MATRICULA*/        
+        SENAO    
+            SE (NOTA2 < 4) ENTAO /* Reprovado */
+                GRAVACAMPOMATRICULA("CODSTATUSRES", "9"); /*CODSTATUSRES = RESULTADO FINAL*/
+                GRAVACAMPOMATRICULA("CODSTATUS", "9");    /*CODSTATUS = STATUS DA MATRICULA*/
+            SENAO /* Exame */
+                GRAVACAMPOMATRICULA("CODSTATUSRES", "10"); /*CODSTATUSRES = RESULTADO FINAL*/
+                GRAVACAMPOMATRICULA("CODSTATUS", "10");    /*CODSTATUS = STATUS DA MATRICULA*/   
+            FIMSE;
+        FIMSE;
+        
+        /*GRAVA NA MEDIA O VALOR DE NOTA2 - SEGUNDA CHAMADA*/
+        GRAVACAMPOETAPA(10, "NOTA", NOTA2);
+        
+    FIMSE;
+FIMSE;
+
+/*-- EXAME --*/
+SE ((BUSCACAMPOETAPA(1, "NOTA", "S")) <> "") OU ((BUSCACAMPOETAPA(2, "NOTA", "S")) <> "") ENTAO
+    SE (TAMSTR(NOTA3) > 0) ENTAO
+        SE (TAMSTR(NOTA1 > 0)) ENTAO
+        
+            SE ((NOTA1+NOTA3) >= 10) ENTAO
+                GRAVACAMPOMATRICULA("CODSTATUSRES", "22"); /*CODSTATUSRES = RESULTADO FINAL*/
+                GRAVACAMPOMATRICULA("CODSTATUS", "22");    /*CODSTATUS = STATUS DA MATRICULA*/
+            SENAO
+                GRAVACAMPOMATRICULA("CODSTATUSRES", "9"); /*CODSTATUSRES = RESULTADO FINAL*/
+                GRAVACAMPOMATRICULA("CODSTATUS", "9");    /*CODSTATUS = STATUS DA MATRICULA*/
+            FIMSE;
+        
+            /*GRAVA O VALOR DA MEDIA CALCULANDO A NOTA DA PROVA REGULAR + NOTA DO EXAME / POR 2*/
+            GRAVACAMPOETAPA(10, "NOTA", ARREDONDA(((NOTA3+NOTA1)/2), 1));
+            
+        SENAO
+    
+            SE(TAMSTR(NOTA2) > 0) ENTAO
+                SE ((NOTA2+NOTA3) >= 10) ENTAO
+                    GRAVACAMPOMATRICULA("CODSTATUSRES", "22"); /*CODSTATUSRES = RESULTADO FINAL*/
+                    GRAVACAMPOMATRICULA("CODSTATUS", "22");    /*CODSTATUS = STATUS DA MATRICULA*/
+                SENAO
+                    GRAVACAMPOMATRICULA("CODSTATUSRES", "9"); /*CODSTATUSRES = RESULTADO FINAL*/
+                    GRAVACAMPOMATRICULA("CODSTATUS", "9");    /*CODSTATUS = STATUS DA MATRICULA*/
+                FIMSE;
+                
+                /*GRAVA O VALOR DA MEDIA CALCULANDO A NOTA DA PROVA SEGUNDA CHAMADA + NOTA DO EXAME / POR 2*/
+                GRAVACAMPOETAPA(10, "NOTA", ARREDONDA(((NOTA3+NOTA2)/2), 1));
+                
+            FIMSE;
+            
+        FIMSE;
+    FIMSE;
+SENAO
+    /*SE LANÇAR A NOTA DE EXAME MAS NAO TIVER NOTA DE PROVA REGULAR OU SEGUNDA CHAMADA, ENTAO LIMPA A NOTA DO EXAME*/
+    GRAVACAMPOETAPA(3, "NOTA", "");   
+FIMSE;
+
+/*-- Recuperação de Conceito --*/
+SE ((BUSCACAMPOETAPA(1, "NOTA", "S")) <> "") OU ((BUSCACAMPOETAPA(2, "NOTA", "S")) <> "") ENTAO
+
+    SE ((BUSCACAMPOETAPA(3, "NOTA", "S")) <> "") ENTAO
+        SE (TAMSTR(NOTA4) > 0) ENTAO
+            SE (NOTA4 >= 5) ENTAO /*Aprovado*/
+                GRAVACAMPOMATRICULA("CODSTATUSRES", "30"); /*CODSTATUSRES = RESULTADO FINAL*/
+                GRAVACAMPOMATRICULA("CODSTATUS", "30");    /*CODSTATUS = STATUS DA MATRICULA*/
+            SENAO /*Reprovado*/
+                GRAVACAMPOMATRICULA("CODSTATUSRES", "9"); /*CODSTATUSRES = RESULTADO FINAL*/
+                GRAVACAMPOMATRICULA("CODSTATUS", "9");    /*CODSTATUS = STATUS DA MATRICULA*/
+            FIMSE;
+            
+            /*GRAVA A NOTA DA RECUPERACAO NA MEDIA*/
+            GRAVACAMPOETAPA(10, "NOTA", NOTA4);
+            
+        FIMSE;
+    SENAO
+        /*SE LANÇAR A NOTA DE RECUPERAÇÃO DE CONCEITO MAS NAO TIVER NOTA DE EXAME*/
+        GRAVACAMPOETAPA(4, "NOTA", "");
+    FIMSE;
+
+SENAO
+    /*SE LANÇAR A NOTA DE RECUPERAÇÃO DE CONCEITO MAS NAO TIVER NOTA DE PROVA REGULAR OU SEGUNDA CHAMADA, ENTAO LIMPA A NOTA DO EXAME*/
+    GRAVACAMPOETAPA(4, "NOTA", "");
+FIMSE;
