@@ -74,6 +74,8 @@ SE (TAMSTR(NOTA1) > 0) ENTAO
     SE (NOTA1 >= 7) ENTAO /* Aprovado */
         GRAVACAMPOMATRICULA("CODSTATUSRES", "11"); /*CODSTATUSRES = RESULTADO FINAL*/
         GRAVACAMPOMATRICULA("CODSTATUS", "11");    /*CODSTATUS = STATUS DA MATRICULA*/
+        GRAVACAMPOETAPA(3, "NOTA", "");
+        GRAVACAMPOETAPA(4, "NOTA", "");
     SENAO
         SE (NOTA1 < 4) ENTAO /* Reprovado */
             GRAVACAMPOMATRICULA("CODSTATUSRES", "9"); /*CODSTATUSRES = RESULTADO FINAL*/
@@ -96,6 +98,8 @@ SENAO
         SE (NOTA2 >= 7) ENTAO /*Aprovado*/    
             GRAVACAMPOMATRICULA("CODSTATUSRES", "11"); /*CODSTATUSRES = RESULTADO FINAL*/
             GRAVACAMPOMATRICULA("CODSTATUS", "11");    /*CODSTATUS = STATUS DA MATRICULA*/        
+            GRAVACAMPOETAPA(3, "NOTA", "");
+            GRAVACAMPOETAPA(4, "NOTA", "");
         SENAO    
             SE (NOTA2 < 4) ENTAO /* Reprovado */
                 GRAVACAMPOMATRICULA("CODSTATUSRES", "9"); /*CODSTATUSRES = RESULTADO FINAL*/
@@ -113,37 +117,41 @@ SENAO
 FIMSE;
 
 /*-- EXAME --*/
-SE ((BUSCACAMPOETAPA(1, "NOTA", "S")) <> "") OU ((BUSCACAMPOETAPA(2, "NOTA", "S")) <> "") ENTAO
+SE (((BUSCACAMPOETAPA(1, "NOTA", "S")) <> "") E ((BUSCACAMPOETAPA(1, "NOTA", "V")) >= 4)) 
+    OU 
+   (((BUSCACAMPOETAPA(2, "NOTA", "S")) <> "") E ((BUSCACAMPOETAPA(2, "NOTA", "V")) >= 4)) 
+ENTAO
+
     SE (TAMSTR(NOTA3) > 0) ENTAO
-        SE (TAMSTR(NOTA1 > 0)) ENTAO
+        SE ((BUSCACAMPOETAPA(1, "NOTA", "S")) <> "") E ((BUSCACAMPOETAPA(1, "NOTA", "V")) < 7) ENTAO
         
-            SE ((NOTA1+NOTA3) >= 10) ENTAO
-                GRAVACAMPOMATRICULA("CODSTATUSRES", "22"); /*CODSTATUSRES = RESULTADO FINAL*/
-                GRAVACAMPOMATRICULA("CODSTATUS", "22");    /*CODSTATUS = STATUS DA MATRICULA*/
+            SE (NOTA3 >= (10-NOTA1)) ENTAO
+                GRAVACAMPOMATRICULA("CODSTATUSRES", "22");
+                GRAVACAMPOMATRICULA("CODSTATUS", "22");
             SENAO
-                GRAVACAMPOMATRICULA("CODSTATUSRES", "9"); /*CODSTATUSRES = RESULTADO FINAL*/
-                GRAVACAMPOMATRICULA("CODSTATUS", "9");    /*CODSTATUS = STATUS DA MATRICULA*/
+                GRAVACAMPOMATRICULA("CODSTATUSRES", "9");
+                GRAVACAMPOMATRICULA("CODSTATUS", "9");
             FIMSE;
-        
-            /*GRAVA O VALOR DA MEDIA CALCULANDO A NOTA DA PROVA REGULAR + NOTA DO EXAME / POR 2*/
+            
             GRAVACAMPOETAPA(10, "NOTA", ARREDONDA(((NOTA3+NOTA1)/2), 1));
             
         SENAO
-    
-            SE(TAMSTR(NOTA2) > 0) ENTAO
-                SE ((NOTA2+NOTA3) >= 10) ENTAO
-                    GRAVACAMPOMATRICULA("CODSTATUSRES", "22"); /*CODSTATUSRES = RESULTADO FINAL*/
-                    GRAVACAMPOMATRICULA("CODSTATUS", "22");    /*CODSTATUS = STATUS DA MATRICULA*/
+            SE((BUSCACAMPOETAPA(2, "NOTA", "S")) <> "") E ((BUSCACAMPOETAPA(2, "NOTA", "V")) < 7) ENTAO
+            
+                SE (NOTA3 >= (10-NOTA2)) ENTAO
+                    GRAVACAMPOMATRICULA("CODSTATUSRES", "22");
+                    GRAVACAMPOMATRICULA("CODSTATUS", "22");
                 SENAO
-                    GRAVACAMPOMATRICULA("CODSTATUSRES", "9"); /*CODSTATUSRES = RESULTADO FINAL*/
-                    GRAVACAMPOMATRICULA("CODSTATUS", "9");    /*CODSTATUS = STATUS DA MATRICULA*/
+                    GRAVACAMPOMATRICULA("CODSTATUSRES", "9");
+                    GRAVACAMPOMATRICULA("CODSTATUS", "9");
                 FIMSE;
                 
                 /*GRAVA O VALOR DA MEDIA CALCULANDO A NOTA DA PROVA SEGUNDA CHAMADA + NOTA DO EXAME / POR 2*/
                 GRAVACAMPOETAPA(10, "NOTA", ARREDONDA(((NOTA3+NOTA2)/2), 1));
                 
+            SENAO
+                GRAVACAMPOETAPA(3, "NOTA", "");        
             FIMSE;
-            
         FIMSE;
     FIMSE;
 SENAO
@@ -152,7 +160,10 @@ SENAO
 FIMSE;
 
 /*-- Recuperação de Conceito --*/
-SE ((BUSCACAMPOETAPA(1, "NOTA", "S")) <> "") OU ((BUSCACAMPOETAPA(2, "NOTA", "S")) <> "") ENTAO
+SE (((BUSCACAMPOETAPA(1, "NOTA", "S")) <> "") E ((BUSCACAMPOETAPA(1, "NOTA", "V")) >= 4) E ((BUSCACAMPOETAPA(1, "NOTA", "V")) < 7)) 
+    OU 
+   (((BUSCACAMPOETAPA(2, "NOTA", "S")) <> "") E ((BUSCACAMPOETAPA(2, "NOTA", "V")) >= 4) E ((BUSCACAMPOETAPA(2, "NOTA", "V")) < 7)) 
+ENTAO
 
     SE ((BUSCACAMPOETAPA(3, "NOTA", "S")) <> "") ENTAO
         SE (TAMSTR(NOTA4) > 0) ENTAO
