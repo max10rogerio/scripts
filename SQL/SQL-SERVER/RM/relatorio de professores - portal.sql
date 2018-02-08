@@ -2,17 +2,17 @@
 /*--
 
 
-Relatório de notas e faltas para professores
+RelatÃ³rio de notas e faltas para professores
 
 Campos chaves da tabela STURMADISC(CODCOLIGADA, IDTURMADISC)
 
 --*/
 
 
-/*--  Criar função para retorna nota e falta  --*/
+/*--  Criar funÃ§Ã£o para retorna nota e falta  --*/
 
 /*-- 
-	Função irá retorna a nota do aluno 
+	FunÃ§Ã£o irÃ¡ retorna a nota do aluno 
 	parametros:
 		 - IDTURMADISC -> tipo: inteiro
 		 - CODETAPA	   -> tipo: inteiro
@@ -22,7 +22,7 @@ ALTER FUNCTION RetornaNotaAluno(
 
 	@IDTURMADISC INT,
 	@CODETAPA    INT,
-	@RA			 INT
+	@RA	     INT
 
 ) RETURNS NUMERIC(10,1)
 BEGIN
@@ -30,21 +30,21 @@ BEGIN
 	DECLARE @NOTA NUMERIC(10,1)
 
 	SET @NOTA = ( SELECT 
-					CAST(NOTAFALTA AS NUMERIC(10,1)) AS NOTA 
-				  FROM 
-					SNOTAETAPA (NOLOCK)
-				  WHERE 
-					IDTURMADISC = @IDTURMADISC 
-					AND CODETAPA = @CODETAPA 
-					AND TIPOETAPA = 'N' 
-					AND RA = @RA
-				)
+		      	CAST(NOTAFALTA AS NUMERIC(10,1)) AS NOTA 
+		      FROM 
+			SNOTAETAPA (NOLOCK)
+		      WHERE 
+			IDTURMADISC = @IDTURMADISC 
+			AND CODETAPA = @CODETAPA 
+			AND TIPOETAPA = 'N' 
+			AND RA = @RA
+		     )
 	RETURN @NOTA
 END
 
 
 /*-- 
-	Função irá retorna a nota do aluno 
+	FunÃ§Ã£o irÃ¡ retorna a nota do aluno 
 	parametros:
 		 - IDTURMADISC -> tipo: inteiro
 		 - CODETAPA	   -> tipo: inteiro
@@ -54,7 +54,7 @@ ALTER FUNCTION RetornaFaltaAluno(
 
 	@IDTURMADISC INT,
 	@CODETAPA    INT,
-	@RA			 INT
+	@RA	     INT
 
 ) RETURNS NUMERIC(10,0)
 BEGIN
@@ -62,29 +62,29 @@ BEGIN
 	DECLARE @FALTA NUMERIC(10,0)
 
 	SET @FALTA = ( SELECT 
-					CAST(NOTAFALTA AS NUMERIC(10,0)) AS NOTA 
-				  FROM 
-					SNOTAETAPA (NOLOCK)
-				  WHERE 
-					IDTURMADISC = @IDTURMADISC 
-					AND CODETAPA = @CODETAPA 
-					AND TIPOETAPA = 'F' 
-					AND RA = @RA
-				)
+		         CAST(NOTAFALTA AS NUMERIC(10,0)) AS NOTA 
+		       FROM 
+			 SNOTAETAPA (NOLOCK)
+		       WHERE 
+			 IDTURMADISC = @IDTURMADISC 
+			 AND CODETAPA = @CODETAPA 
+			 AND TIPOETAPA = 'F' 
+			 AND RA = @RA
+		      )
 	RETURN @FALTA
 END
 
 
-/*-- CABEÇALHO --*/
+/*-- CABEÃ‡ALHO --*/
 SELECT 
 	TD.IDTURMADISC,
-	TD.CODTURMA 'Código da Turma',
-	PL.CODPERLET 'Código Período Letivo',
-	PT.CODPROF 'Código Professor',
+	TD.CODTURMA 'CÃ³digo da Turma',
+	PL.CODPERLET 'CÃ³digo PerÃ­odo Letivo',
+	PT.CODPROF 'CÃ³digo Professor',
 	P.NOME 'Nome do Professor',
 	C.NOME 'Nome do Curso',
 	T.NOME 'Turno',
-	H.NOME 'Habilitação'
+	H.NOME 'HabilitaÃ§Ã£o'
 FROM 
 	STURMADISC TD (NOLOCK)
 	INNER JOIN SPROFESSORTURMA PT (NOLOCK) ON PT.IDTURMADISC = TD.IDTURMADISC
@@ -109,15 +109,15 @@ SELECT * FROM STURMADISC WHERE IDTURMADISC = '8860'
 SELECT
 	A.RA 'RA',
 	P.NOME 'Nome do Aluno',
-	dbo.RetornaNotaAluno(M.IDTURMADISC, 1, M.RA)  '1º Bim. - Nota',
-	dbo.RetornaNotaAluno(M.IDTURMADISC, 2, M.RA)  '1º Bim - 2º Chamada',
-	dbo.RetornaFaltaAluno(M.IDTURMADISC, 1, M.RA) '1º Bim. - Faltas',
-	dbo.RetornaNotaAluno(M.IDTURMADISC, 4, M.RA)  '2º Bim - Nota',
-	dbo.RetornaNotaAluno(M.IDTURMADISC, 5, M.RA)  '2º Bim - 2º Chamada',
-	dbo.RetornaFaltaAluno(M.IDTURMADISC, 4, M.RA) '2º Bim - Falta',
+	dbo.RetornaNotaAluno(M.IDTURMADISC, 1, M.RA)  '1Âº Bim. - Nota',
+	dbo.RetornaNotaAluno(M.IDTURMADISC, 2, M.RA)  '1Âº Bim - 2Âº Chamada',
+	dbo.RetornaFaltaAluno(M.IDTURMADISC, 1, M.RA) '1Âº Bim. - Faltas',
+	dbo.RetornaNotaAluno(M.IDTURMADISC, 4, M.RA)  '2Âº Bim - Nota',
+	dbo.RetornaNotaAluno(M.IDTURMADISC, 5, M.RA)  '2Âº Bim - 2Âº Chamada',
+	dbo.RetornaFaltaAluno(M.IDTURMADISC, 4, M.RA) '2Âº Bim - Falta',
 	dbo.RetornaNotaAluno(M.IDTURMADISC, 8, M.RA)  'Exame',
-	dbo.RetornaNotaAluno(M.IDTURMADISC, 0, M.RA)  'Média de Notas',
-	dbo.RetornaFaltaAluno(M.IDTURMADISC, 0, M.RA) 'Média de Faltas'  
+	dbo.RetornaNotaAluno(M.IDTURMADISC, 0, M.RA)  'MÃ©dia de Notas',
+	dbo.RetornaFaltaAluno(M.IDTURMADISC, 0, M.RA) 'MÃ©dia de Faltas'  
 FROM
 	SMATRICULA M (NOLOCK)
 	INNER JOIN SALUNO A (NOLOCK) ON A.RA = M.RA
