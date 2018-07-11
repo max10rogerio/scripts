@@ -1,0 +1,6 @@
+
+//verifica os processos que estão rodando na porta informada
+netstat -ano | findstr :portNumber
+
+//derruba o processo passando o PID, que é obtido no comando anterior
+taskkill /PID typeyourPIDhere /F
